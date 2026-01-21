@@ -4,7 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Migration Checker KD 3921</title>
+
   <style>
+    /* GLOBAL FIX */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -21,7 +27,7 @@
       width: 100%;
       max-width: 420px;
       padding: 28px;
-      border-radius: 14px;
+      border-radius: 16px;
       box-shadow: 0 20px 40px rgba(0,0,0,.2);
       text-align: center;
     }
@@ -51,6 +57,16 @@
       border-color: #2a5298;
     }
 
+    /* Remove number arrows */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
     button {
       width: 100%;
       padding: 14px;
@@ -65,6 +81,11 @@
 
     button:hover {
       background: #1e3c72;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
     }
 
     .result {
@@ -86,8 +107,15 @@
       font-size: 12px;
       color: #aaa;
     }
+
+    a {
+      color: #2a5298;
+      font-weight: 600;
+      text-decoration: none;
+    }
   </style>
 </head>
+
 <body>
 
   <div class="card">
@@ -95,35 +123,55 @@
     <p>Enter your Rise of Kingdoms ID to check status</p>
 
     <input id="rokId" type="number" placeholder="Enter ROK ID" />
-    <button onclick="checkId()">Check ID</button>
+    <button id="checkBtn" onclick="checkId()">Check ID</button>
 
     <div id="result" class="result"></div>
 
-    <footer>
-      © KD 3921 
-    </footer>
+    <footer>© KD 3921</footer>
   </div>
 
   <script>
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTEd9SyHokdWzX2qfU6RIP3dWjYdTu8WlSgeceJCTHXO7y-9zTEdRBeg3_03t1kkDIrmNOFOLveqPeQ/pub?output=csv";
-const FORM_URL = "https://forms.gle/mWeKiDxHZo4gdn9V7";
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTEd9SyHokdWzX2qfU6RIP3dWjYdTu8WlSgeceJCTHXO7y-9zTEdRBeg3_03t1kkDIrmNOFOLveqPeQ/pub?output=csv";
+    const FORM_URL  = "https://forms.gle/mWeKiDxHZo4gdn9V7";
 
-async function check() {
-  const id = document.getElementById("rok").value.trim();
-  if (!id) return;
+    async function checkId() {
+      const id = document.getElementById("rokId").value.trim();
+      const result = document.getElementById("result");
+      const btn = document.getElementById("checkBtn");
 
-  const res = await fetch(SHEET_URL);
-  const text = await res.text();
-  const rows = text.split("\n");
+      if (!id) {
+        result.textContent = "Please enter a ROK ID.";
+        result.className = "result error";
+        return;
+      }
 
-  const exists = rows.some(r => r.split(",")[1] === id);
+      btn.disabled = true;
+      result.textContent = "Checking...";
+      result.className = "result";
 
-  document.getElementById("result").innerHTML =
-    exists
-      ? "❌ This ROK ID is already registered."
-      : `✅ ID not found. <a href="${FORM_URL}">Submit application</a>`;
-}
-</script>
+      try {
+        const res = await fetch(SHEET_URL);
+        const text = await res.text();
+        const rows = text.split("\n").slice(1); // skip header
+
+        // Column B = ROK ID (index 1)
+        const exists = rows.some(row => row.split(",")[1]?.trim() === id);
+
+        if (exists) {
+          result.textContent = "❌ This ROK ID is already registered.";
+          result.className = "result error";
+        } else {
+          result.innerHTML = `✅ ID not found. <a href="${FORM_URL}" target="_blank">Submit application</a>`;
+          result.className = "result success";
+        }
+      } catch (err) {
+        result.textContent = "⚠️ Failed to load data. Please try again.";
+        result.className = "result error";
+      }
+
+      btn.disabled = false;
+    }
+  </script>
 
 </body>
 </html>
