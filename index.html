@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ROK ID Check</title>
+</head>
+<body>
+
+<h3>ROK ID Checker</h3>
+
+<input id="rok" placeholder="Enter ROK ID">
+<button onclick="check()">Check</button>
+
+<div id="result"></div>
+
+<script>
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTEd9SyHokdWzX2qfU6RIP3dWjYdTu8WlSgeceJCTHXO7y-9zTEdRBeg3_03t1kkDIrmNOFOLveqPeQ/pub?output=csv";
+const FORM_URL = "https://forms.gle/mWeKiDxHZo4gdn9V7";
+
+async function check() {
+  const id = document.getElementById("rok").value.trim();
+  if (!id) return;
+
+  const res = await fetch(SHEET_URL);
+  const text = await res.text();
+  const rows = text.split("\n");
+
+  const exists = rows.some(r => r.split(",")[1] === id);
+
+  document.getElementById("result").innerHTML =
+    exists
+      ? "❌ This ROK ID is already registered."
+      : `✅ ID not found. <a href="${FORM_URL}">Submit application</a>`;
+}
+</script>
+
+</body>
+</html>
