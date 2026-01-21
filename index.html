@@ -1,18 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>ROK ID Check</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ROK ID Checker</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: #333;
+    }
+
+    .card {
+      background: #fff;
+      width: 100%;
+      max-width: 420px;
+      padding: 28px;
+      border-radius: 14px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.2);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    p {
+      margin: 0 0 20px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      outline: none;
+      margin-bottom: 14px;
+    }
+
+    input:focus {
+      border-color: #2a5298;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #2a5298;
+      color: white;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: #1e3c72;
+    }
+
+    .result {
+      margin-top: 18px;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .success {
+      color: #1a7f37;
+    }
+
+    .error {
+      color: #b42318;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #aaa;
+    }
+  </style>
 </head>
 <body>
 
-<h3>ROK ID Checker</h3>
+  <div class="card">
+    <h1>ROK ID Checker</h1>
+    <p>Enter your Rise of Kingdoms ID to check status</p>
 
-<input id="rok" placeholder="Enter ROK ID">
-<button onclick="check()">Check</button>
+    <input id="rokId" type="number" placeholder="Enter ROK ID" />
+    <button onclick="checkId()">Check ID</button>
 
-<div id="result"></div>
+    <div id="result" class="result"></div>
 
-<script>
+    <footer>
+      © Alliance Recruitment
+    </footer>
+  </div>
+
+  <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTEd9SyHokdWzX2qfU6RIP3dWjYdTu8WlSgeceJCTHXO7y-9zTEdRBeg3_03t1kkDIrmNOFOLveqPeQ/pub?output=csv";
 const FORM_URL = "https://forms.gle/mWeKiDxHZo4gdn9V7";
 
